@@ -3,6 +3,7 @@ Problem Statement:Event Scheduler and Conflict Detector
 Scenario:You are tasked with building a system for managing events in a day. The system should allow users to add events with a specific start time, end time, and description. The program should also detect conflicts between events and suggest alternative time slots.
 
 Code:
+from datetime import datetime, timedelta
 class Event:
     def __init__(self, name, start_time, end_time):
         self.name = name
