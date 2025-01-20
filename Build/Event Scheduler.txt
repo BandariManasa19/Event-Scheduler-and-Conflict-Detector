@@ -1,0 +1,75 @@
+Question:
+Problem Statement:Event Scheduler and Conflict Detector
+Scenario:You are tasked with building a system for managing events in a day. The system should allow users to add events with a specific start time, end time, and description. The program should also detect conflicts between events and suggest alternative time slots.
+
+Code:
+class Event:
+    def __init__(self, name, start_time, end_time):
+        self.name = name
+        self.start_time = datetime.strptime(start_time, "%H:%M")
+        self.end_time = datetime.strptime(end_time, "%H:%M")
+
+    def __repr__(self):
+        return f'{self.name}, Start: {self.start_time.strftime("%H:%M")}, End: {self.end_time.strftime("%H:%M")}'
+
+def detect_conflicts(events):
+    conflicts = []
+    for i in range(len(events)):
+        for j in range(i + 1, len(events)):
+            if (events[i].start_time < events[j].end_time and
+                events[i].end_time > events[j].start_time):
+                conflicts.append((events[i], events[j]))
+    return conflicts
+
+def suggest_resolution(events, conflicts):
+    suggestions = []
+    for conflict in conflicts:
+        for event in events:
+            if event == conflict[1]:
+                new_start_time = add_time(event.start_time, timedelta(hours=1.5))
+                new_end_time = add_time(event.end_time, timedelta(hours=1.5))
+                suggestions.append((event.name, new_start_time.strftime("%H:%M"), new_end_time.strftime("%H:%M")))
+    return suggestions
+
+def add_time(time, duration):
+    return time + duration
+
+def main():
+    events = [
+        Event("Meeting A", "09:00", "10:30"),
+        Event("Workshop B", "10:00", "11:30"),
+        Event("Lunch Break", "12:00", "13:00"),
+        Event("Presentation C", "10:30", "12:00")
+    ]
+
+    print("Sorted Schedule:")
+    for event in sorted(events, key=lambda x: x.start_time):
+        print(event)
+
+    conflicts = detect_conflicts(events)
+    print("\nConflicting Events:")
+    for conflict in conflicts:
+        print(f'{conflict[0].name} and {conflict[1].name}')
+
+    suggestions = suggest_resolution(events, conflicts)
+    print("\nSuggested Resolutions:")
+    for suggestion in suggestions:
+        print(f'Reschedule {suggestion[0]} to Start: {suggestion[1]}, End: {suggestion[2]}')
+
+if __name__ == "__main__":
+    main()
+
+Output:
+Sorted Schedule:
+Meeting A, Start: 09:00, End: 10:30
+Workshop B, Start: 10:00, End: 11:30
+Presentation C, Start: 10:30, End: 12:00
+Lunch Break, Start: 12:00, End: 13:00
+
+Conflicting Events:
+Meeting A and Workshop B
+Workshop B and Presentation C
+
+Suggested Resolutions:
+Reschedule Workshop B to Start: 11:30, End: 13:00
+Reschedule Presentation C to Start: 12:00, End: 13:30
